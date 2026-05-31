@@ -1,0 +1,585 @@
+:root {
+  /* Tokens centrais do dark mode, inspirados em apps de treino modernos. */
+  color-scheme: dark;
+  --bg: #101114;
+  --surface: #17191f;
+  --surface-2: #20232b;
+  --surface-3: #292d36;
+  --text: #f6f7fb;
+  --muted: #a8adb8;
+  --subtle: #777f8e;
+  --line: rgba(255, 255, 255, 0.09);
+  --accent: #3ddc97;
+  --accent-2: #44a6ff;
+  --danger: #ff5d68;
+  --warning: #f7c948;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.36);
+  --radius: 8px;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  background:
+    radial-gradient(circle at top right, rgba(61, 220, 151, 0.12), transparent 32rem),
+    linear-gradient(180deg, #111319 0%, #0f1013 100%);
+  color: var(--text);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #101217;
+  color: var(--text);
+  padding: 0.85rem 0.9rem;
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: rgba(61, 220, 151, 0.68);
+  box-shadow: 0 0 0 3px rgba(61, 220, 151, 0.13);
+}
+
+label {
+  display: grid;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.app-shell {
+  width: min(1180px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 1rem 1rem 6.4rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0 1.1rem;
+}
+
+.topbar h1,
+.section-heading h2,
+.dialog-header h2 {
+  margin: 0;
+  letter-spacing: 0;
+}
+
+.topbar h1 {
+  font-size: clamp(1.65rem, 7vw, 3rem);
+  line-height: 1;
+}
+
+.eyebrow {
+  margin: 0 0 0.28rem;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.today-pill,
+.status-badge {
+  flex: 0 0 auto;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  padding: 0.55rem 0.8rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.status-badge.running {
+  border-color: rgba(61, 220, 151, 0.5);
+  color: var(--accent);
+}
+
+.status-badge.paused {
+  border-color: rgba(247, 201, 72, 0.5);
+  color: var(--warning);
+}
+
+.view {
+  display: none;
+}
+
+.view.is-active {
+  display: block;
+}
+
+.section-heading,
+.panel-title,
+.dialog-header,
+.dialog-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.section-heading {
+  margin: 0.4rem 0 1rem;
+}
+
+.section-heading h2 {
+  font-size: clamp(1.45rem, 5vw, 2.2rem);
+}
+
+.metric-grid,
+.chart-grid {
+  /* O layout nasce compacto no mobile e ganha colunas nos breakpoints abaixo. */
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.metric-card,
+.panel,
+.chart-panel,
+.workout-card,
+.history-card,
+.jump-card,
+.weight-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(23, 25, 31, 0.94);
+  box-shadow: var(--shadow);
+}
+
+.metric-card {
+  min-height: 8.4rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.metric-card.highlight {
+  border-color: rgba(61, 220, 151, 0.38);
+  background: linear-gradient(145deg, rgba(61, 220, 151, 0.18), rgba(23, 25, 31, 0.96));
+}
+
+.metric-card.wide {
+  grid-column: 1 / -1;
+}
+
+.metric-card span,
+.label {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.metric-card strong {
+  display: block;
+  margin: 0.45rem 0;
+  font-size: clamp(1.25rem, 6vw, 2rem);
+  line-height: 1.05;
+}
+
+.metric-card small,
+.panel-title span {
+  color: var(--subtle);
+  font-size: 0.82rem;
+}
+
+.panel,
+.chart-panel {
+  margin-top: 0.9rem;
+  padding: 1rem;
+}
+
+.panel-title h3,
+.chart-panel h3,
+.dialog-section-title h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.workout-select-row,
+.button-row {
+  display: flex;
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+}
+
+.workout-select-row select {
+  min-width: 0;
+}
+
+.primary-button,
+.secondary-button,
+.ghost-button,
+.danger-button,
+.icon-button {
+  min-height: 2.8rem;
+  border-radius: var(--radius);
+  color: var(--text);
+  font-weight: 800;
+  padding: 0.72rem 0.95rem;
+}
+
+.primary-button {
+  background: var(--accent);
+  color: #06120d;
+}
+
+.secondary-button {
+  background: var(--surface-3);
+}
+
+.ghost-button {
+  border: 1px solid var(--line);
+  background: transparent;
+}
+
+.danger-button {
+  background: rgba(255, 93, 104, 0.16);
+  color: #ff9ca4;
+}
+
+.icon-button {
+  width: 2.6rem;
+  padding: 0;
+  background: var(--surface-3);
+}
+
+.full {
+  width: 100%;
+}
+
+.list-stack {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.list-stack.compact {
+  gap: 0.55rem;
+}
+
+.workout-card,
+.history-card,
+.jump-card,
+.weight-card {
+  padding: 1rem;
+}
+
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.card-header p,
+.muted {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.tag-row,
+.card-actions,
+.exercise-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.tag-row {
+  margin-top: 0.8rem;
+}
+
+.tag {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  padding: 0.35rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.card-actions {
+  margin-top: 0.85rem;
+}
+
+.card-actions button {
+  min-height: 2.35rem;
+  padding: 0.45rem 0.68rem;
+}
+
+.session-layout {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.timer-panel strong,
+.rest-panel strong {
+  display: block;
+  margin: 0.5rem 0 0.85rem;
+  font-size: clamp(2.2rem, 14vw, 4rem);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.rest-panel.done {
+  animation: restPulse 900ms ease-in-out infinite alternate;
+}
+
+@keyframes restPulse {
+  from {
+    border-color: rgba(61, 220, 151, 0.28);
+    box-shadow: 0 0 0 rgba(61, 220, 151, 0);
+  }
+  to {
+    border-color: rgba(61, 220, 151, 0.9);
+    box-shadow: 0 0 32px rgba(61, 220, 151, 0.32);
+  }
+}
+
+.rest-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem;
+  margin-bottom: 0.65rem;
+}
+
+.rest-grid button {
+  border-radius: var(--radius);
+  background: var(--surface-3);
+  color: var(--text);
+  font-weight: 800;
+  padding: 0.75rem 0.25rem;
+}
+
+.exercise-run-list,
+.exercise-editor-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.exercise-run,
+.exercise-editor {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.035);
+  padding: 0.85rem;
+}
+
+.exercise-run h4,
+.exercise-editor h4 {
+  margin: 0 0 0.65rem;
+}
+
+.exercise-run p {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+}
+
+.exercise-grid,
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.exercise-grid label:first-child,
+.exercise-grid label:last-child,
+.span-2 {
+  grid-column: 1 / -1;
+}
+
+.form-grid button {
+  align-self: end;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+dialog {
+  width: min(760px, calc(100% - 1.2rem));
+  max-height: min(90vh, 900px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  padding: 0;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.68);
+}
+
+dialog form {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem;
+}
+
+.bottom-nav {
+  /* Navegacao inferior facilita o uso com uma mao no celular. */
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.2rem;
+  border-top: 1px solid var(--line);
+  background: rgba(15, 16, 19, 0.94);
+  backdrop-filter: blur(18px);
+  padding: 0.5rem;
+}
+
+.bottom-nav button {
+  min-width: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--subtle);
+  padding: 0.58rem 0.15rem;
+  font-size: clamp(0.62rem, 2.6vw, 0.8rem);
+  font-weight: 800;
+}
+
+.bottom-nav button.is-active {
+  background: rgba(61, 220, 151, 0.14);
+  color: var(--accent);
+}
+
+.toast {
+  position: fixed;
+  right: 1rem;
+  bottom: 5.6rem;
+  left: 1rem;
+  z-index: 30;
+  transform: translateY(1rem);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #f6f7fb;
+  color: #101114;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  padding: 0.85rem 1rem;
+  font-weight: 800;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.empty-state {
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  padding: 1.4rem;
+  text-align: center;
+}
+
+canvas {
+  width: 100% !important;
+}
+
+@media (min-width: 760px) {
+  .app-shell {
+    padding: 1.4rem 1.4rem 7rem;
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .metric-card.wide {
+    grid-column: span 2;
+  }
+
+  .session-layout,
+  .chart-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chart-grid .chart-panel:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .toast {
+    right: 1.4rem;
+    left: auto;
+    width: min(420px, calc(100% - 2.8rem));
+  }
+}
+
+@media (min-width: 1040px) {
+  .metric-grid {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .metric-card.wide {
+    grid-column: span 2;
+  }
+
+  .bottom-nav {
+    right: 50%;
+    left: auto;
+    width: min(980px, calc(100% - 2rem));
+    transform: translateX(50%);
+    border: 1px solid var(--line);
+    border-radius: 14px 14px 0 0;
+  }
+}

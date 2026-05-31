@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101114">
+    <meta name="description" content="Aplicativo pessoal de treino de academia com treinos, historico, peso, impulsao e graficos.">
+    <title>ForgeFit - Treino Pessoal</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Chart.js vem por CDN para manter o projeto estatico e compativel com GitHub Pages. -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js" defer></script>
+    <script src="js/storage.js" defer></script>
+    <script src="js/workouts.js" defer></script>
+    <script src="js/history.js" defer></script>
+    <script src="js/timer.js" defer></script>
+    <script src="js/weight.js" defer></script>
+    <script src="js/jump.js" defer></script>
+    <script src="js/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Treino pessoal</p>
+          <h1>ForgeFit</h1>
+        </div>
+        <div class="today-pill" id="todayLabel">Hoje</div>
+      </header>
+
+      <main>
+        <section class="view is-active" id="view-dashboard" aria-labelledby="dashboard-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Resumo</p>
+              <h2 id="dashboard-title">Dashboard</h2>
+            </div>
+            <button class="ghost-button" id="quickStartBtn" type="button">Iniciar treino</button>
+          </div>
+
+          <div class="metric-grid">
+            <article class="metric-card highlight">
+              <span>Peso atual</span>
+              <strong id="metricCurrentWeight">-- kg</strong>
+              <small id="metricWeightTrend">Sem registros</small>
+            </article>
+            <article class="metric-card">
+              <span>Peso meta</span>
+              <strong id="metricGoalWeight">-- kg</strong>
+              <small id="metricGoalGap">Defina uma meta</small>
+            </article>
+            <article class="metric-card">
+              <span>Treino do dia</span>
+              <strong id="metricTodayWorkout">--</strong>
+              <small id="metricTodayWorkoutInfo">Crie sua rotina</small>
+            </article>
+            <article class="metric-card">
+              <span>Dias consecutivos</span>
+              <strong id="metricStreak">0</strong>
+              <small>Sequencia ativa</small>
+            </article>
+            <article class="metric-card">
+              <span>Total de treinos</span>
+              <strong id="metricTotalWorkouts">0</strong>
+              <small>Historico concluido</small>
+            </article>
+            <article class="metric-card">
+              <span>Horas treinadas</span>
+              <strong id="metricHours">0h</strong>
+              <small>Tempo acumulado</small>
+            </article>
+            <article class="metric-card wide">
+              <span>Ultimo treino</span>
+              <strong id="metricLastWorkout">Nenhum treino finalizado</strong>
+              <small id="metricLastWorkoutDate">Finalize um treino para registrar</small>
+            </article>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              <h3>Comecar agora</h3>
+              <span id="availableWorkoutCount">0 treinos</span>
+            </div>
+            <div class="workout-select-row">
+              <select id="activeWorkoutSelect" aria-label="Escolher treino para execucao"></select>
+              <button class="primary-button" id="startSelectedWorkoutBtn" type="button">Iniciar</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="view" id="view-workouts" aria-labelledby="workouts-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Rotinas</p>
+              <h2 id="workouts-title">Treinos</h2>
+            </div>
+            <button class="primary-button" id="newWorkoutBtn" type="button">Novo treino</button>
+          </div>
+          <div id="workoutList" class="list-stack"></div>
+        </section>
+
+        <section class="view" id="view-session" aria-labelledby="session-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Execucao</p>
+              <h2 id="session-title">Treino ativo</h2>
+            </div>
+            <span class="status-badge" id="sessionStatus">Parado</span>
+          </div>
+
+          <div class="session-layout">
+            <div class="panel timer-panel">
+              <span class="label">Cronometro</span>
+              <strong id="sessionTimer">00:00:00</strong>
+              <div class="button-row">
+                <button class="primary-button" id="sessionStartBtn" type="button">Iniciar</button>
+                <button class="secondary-button" id="sessionPauseBtn" type="button">Pausar</button>
+                <button class="danger-button" id="sessionFinishBtn" type="button">Finalizar</button>
+              </div>
+            </div>
+
+            <div class="panel rest-panel" id="restPanel">
+              <span class="label">Descanso</span>
+              <strong id="restTimer">00:00</strong>
+              <div class="rest-grid">
+                <button type="button" data-rest="30">30s</button>
+                <button type="button" data-rest="60">60s</button>
+                <button type="button" data-rest="90">90s</button>
+                <button type="button" data-rest="120">120s</button>
+              </div>
+              <button class="ghost-button full" id="stopRestBtn" type="button">Parar descanso</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title">
+              <h3 id="activeWorkoutName">Nenhum treino selecionado</h3>
+              <span id="activeExerciseCount">0 exercicios</span>
+            </div>
+            <div id="activeExerciseList" class="exercise-run-list"></div>
+          </div>
+        </section>
+
+        <section class="view" id="view-history" aria-labelledby="history-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Registro</p>
+              <h2 id="history-title">Historico</h2>
+            </div>
+            <button class="ghost-button" id="clearHistoryBtn" type="button">Limpar</button>
+          </div>
+          <div id="historyList" class="list-stack"></div>
+        </section>
+
+        <section class="view" id="view-weight" aria-labelledby="weight-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Composicao</p>
+              <h2 id="weight-title">Controle de peso</h2>
+            </div>
+          </div>
+
+          <form class="panel form-grid" id="weightForm">
+            <label>
+              Peso atual (kg)
+              <input id="weightInput" type="number" min="20" max="350" step="0.1" required>
+            </label>
+            <label>
+              Data
+              <input id="weightDateInput" type="date" required>
+            </label>
+            <label>
+              Meta de peso (kg)
+              <input id="goalWeightInput" type="number" min="20" max="350" step="0.1">
+            </label>
+            <button class="primary-button" type="submit">Salvar peso</button>
+          </form>
+
+          <div class="chart-panel">
+            <canvas id="weightChart" height="220"></canvas>
+          </div>
+          <div id="weightList" class="list-stack compact"></div>
+        </section>
+
+        <section class="view" id="view-jump" aria-labelledby="jump-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Potencia</p>
+              <h2 id="jump-title">Impulsao</h2>
+            </div>
+          </div>
+
+          <form class="panel form-grid" id="jumpForm">
+            <label>
+              Tipo
+              <select id="jumpTypeInput" required>
+                <option value="Salto vertical">Salto vertical</option>
+                <option value="Box Jump">Box Jump</option>
+                <option value="Pliometria">Pliometria</option>
+                <option value="Agachamento explosivo">Agachamento explosivo</option>
+              </select>
+            </label>
+            <label>
+              Resultado
+              <input id="jumpValueInput" type="number" min="0" max="300" step="0.1" required>
+            </label>
+            <label>
+              Unidade
+              <select id="jumpUnitInput">
+                <option value="cm">cm</option>
+                <option value="reps">reps</option>
+                <option value="kg">kg</option>
+              </select>
+            </label>
+            <label>
+              Data
+              <input id="jumpDateInput" type="date" required>
+            </label>
+            <label class="span-2">
+              Observacoes
+              <textarea id="jumpNotesInput" rows="3"></textarea>
+            </label>
+            <button class="primary-button" type="submit">Registrar</button>
+          </form>
+
+          <div id="jumpList" class="list-stack"></div>
+        </section>
+
+        <section class="view" id="view-charts" aria-labelledby="charts-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Analise</p>
+              <h2 id="charts-title">Graficos</h2>
+            </div>
+          </div>
+          <div class="chart-grid">
+            <div class="chart-panel">
+              <h3>Peso corporal</h3>
+              <canvas id="dashboardWeightChart" height="220"></canvas>
+            </div>
+            <div class="chart-panel">
+              <h3>Treinos por semana</h3>
+              <canvas id="weeklyWorkoutsChart" height="220"></canvas>
+            </div>
+            <div class="chart-panel">
+              <h3>Evolucao de carga</h3>
+              <canvas id="loadProgressChart" height="220"></canvas>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <!-- Navegacao fixa mobile-first: cada botao alterna uma tela sem recarregar a pagina. -->
+      <nav class="bottom-nav" aria-label="Navegacao principal">
+        <button class="is-active" type="button" data-view="dashboard">Inicio</button>
+        <button type="button" data-view="workouts">Treinos</button>
+        <button type="button" data-view="session">Executar</button>
+        <button type="button" data-view="history">Historico</button>
+        <button type="button" data-view="weight">Peso</button>
+        <button type="button" data-view="jump">Impulsao</button>
+        <button type="button" data-view="charts">Graficos</button>
+      </nav>
+    </div>
+
+    <dialog id="workoutDialog">
+      <form id="workoutForm" method="dialog">
+        <div class="dialog-header">
+          <div>
+            <p class="eyebrow">Editor</p>
+            <h2 id="workoutDialogTitle">Novo treino</h2>
+          </div>
+          <button class="icon-button" id="closeWorkoutDialogBtn" value="cancel" type="button" aria-label="Fechar">x</button>
+        </div>
+
+        <input id="workoutIdInput" type="hidden">
+        <label>
+          Nome do treino
+          <input id="workoutNameInput" type="text" maxlength="60" required>
+        </label>
+        <label>
+          Dia sugerido
+          <select id="workoutDayInput">
+            <option value="Todos os dias">Todos os dias</option>
+            <option value="Domingo">Domingo</option>
+            <option value="Segunda-feira">Segunda-feira</option>
+            <option value="Terca-feira">Terca-feira</option>
+            <option value="Quarta-feira">Quarta-feira</option>
+            <option value="Quinta-feira">Quinta-feira</option>
+            <option value="Sexta-feira">Sexta-feira</option>
+            <option value="Sabado">Sabado</option>
+          </select>
+        </label>
+
+        <div class="dialog-section-title">
+          <h3>Exercicios</h3>
+          <button class="secondary-button" id="addExerciseBtn" type="button">Adicionar</button>
+        </div>
+        <div id="exerciseEditorList" class="exercise-editor-list"></div>
+
+        <div class="dialog-actions">
+          <button class="secondary-button" id="cancelWorkoutBtn" type="button">Cancelar</button>
+          <button class="primary-button" type="submit">Salvar treino</button>
+        </div>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
